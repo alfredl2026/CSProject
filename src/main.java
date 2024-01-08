@@ -34,10 +34,26 @@ public class main {
         displayMenu();
         userSelectMenu();
     }
-    public static void gameOver() throws IOException {
+    public static void gameOver() throws IOException, InterruptedException {
         System.out.println("GAME OVER!");
         updateLeaderboard("leaderboard", username, score);
-        System.exit(1);
+        tryAgainPrompt();
+    }
+    public static void tryAgainPrompt() throws IOException, InterruptedException {
+        System.out.println("Try Again? (y/n, please type twice to confirm.)");
+        Scanner tryAgain = new Scanner(System.in);
+        strInput = tryAgain.nextLine();
+        if(strInput.equals("y")){
+            startGame();
+        }
+        if(strInput.equals("n")){
+            System.out.println("Goodbye!");
+            System.exit(1);
+        }
+        else {
+            invalid();
+        }
+        tryAgain.close();
     }
     public static String randomFromFile(String fileName) throws FileNotFoundException {
         String[] word = fileIntoArray(fileName);
@@ -67,6 +83,10 @@ public class main {
         alive=1;
         score=0;
         newWordTime=3000;
+        for (int i = 0; i<wordsDisplay.length; i++){
+            wordsDisplay[i]="";
+            wordsTemp[i]="";
+        }
         Thread userInputThread = new Thread(() -> {
             while (alive!=0) {
                 try {
@@ -123,7 +143,7 @@ public class main {
         System.out.print("Score: " + score);
         System.out.println("");
     }
-    public static void generateWord(String word) throws IOException {
+    public static void generateWord(String word) throws IOException, InterruptedException {
         if(word == ""){
             updateWordsArray(word);
         }
@@ -139,7 +159,7 @@ public class main {
             System.out.println(wordsDisplay[i]);
         }
     }
-    public static void updateWordsArray(String word) throws IOException {
+    public static void updateWordsArray(String word) throws IOException, InterruptedException {
         for(int i = wordsDisplay.length-2; i>=0; i--){
             wordsDisplay[i]=wordsTemp[i+1];
         }
@@ -149,6 +169,7 @@ public class main {
             wordsTemp[i]=wordsDisplay[i];
         }
         if(wordsDisplay[0]!=""){
+            alive = 0;
             gameOver();
         }
     }
